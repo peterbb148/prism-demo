@@ -1,0 +1,142 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "v1",
+    "title": "myDSV public API"
+  },
+  "host": "public.api.dsv.com",
+  "basePath": "/v1/mydsv",
+  "schemes": [
+    "https"
+  ],
+  "securityDefinitions": {
+    "basicAuth": {
+      "type": "basic"
+    },
+    "anonymous": {
+      "type": "basic"
+    }
+  },
+  "paths": {
+    "/bookings/{bookingId}/labels": {
+      "get": {
+        "consumes": [
+        ],
+        "produces": [
+          "application/pdf"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "bookingId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "isLabeledPrinter",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "printFormat",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "lang",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+            },
+            "schema": {
+              "type": "file"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "headers": {
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorDTO"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "ErrorDTO": {
+      "properties": {
+        "code": {
+          "type": "string",
+          "example": "ERR12345"
+        },
+        "development": {
+          "$ref": "#/definitions/ErrorDTO$DevelopmentDTO"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ErrorDTO$FieldDTO"
+          }
+        },
+        "message": {
+          "type": "string",
+          "example": "This message is passed to the application user"
+        }
+      },
+      "required": [
+        "message"
+      ]
+    },
+    "ErrorDTO$DevelopmentDTO": {
+      "description": "Development details for problem",
+      "properties": {
+        "exception": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string",
+          "example": "verbose, plain language description of the problem for the app developer with hints on how to fix it"
+        }
+      }
+    },
+    "ErrorDTO$FieldDTO": {
+      "description": "Specify fields of error",
+      "properties": {
+        "code": {
+          "type": "string",
+          "example": "ERR12345"
+        },
+        "message": {
+          "type": "string",
+          "example": "validation error"
+        },
+        "name": {
+          "type": "string",
+          "example": "field_name"
+        }
+      }
+    },
+    "ResultDTO": {
+      "description": "Returned for successful booking",
+      "properties": {
+        "bookingId": {
+          "type": "string",
+          "example": "40257084630004090521"
+        }
+      },
+      "example": {
+        "bookingId": "40257084630004090521"
+      },
+      "required": [
+        "bookingId"
+      ]
+    },
+  }
+}

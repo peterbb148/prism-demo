@@ -1,0 +1,786 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "v1",
+    "title": "myDSV public API"
+  },
+  "host": "public.api.dsv.com",
+  "basePath": "/v1/mydsv",
+  "schemes": [
+    "https"
+  ],
+  "securityDefinitions": {
+    "basicAuth": {
+      "type": "basic"
+    },
+    "anonymous": {
+      "type": "basic"
+    }
+  },
+  "paths": {
+    "/bookings": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OrderDTO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+            },
+            "schema": {
+              "$ref": "#/definitions/ResultDTO"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "headers": {
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorDTO"
+            }
+          }
+        }
+      }
+    },
+    "/bookings/validate": {
+      "post":{
+        "consumes":[
+          "application/json"
+        ],
+        "produces":[
+          "application/json"
+        ],
+        "parameters":[
+          {
+            "name":"body",
+            "in":"body",
+            "required":true,
+            "schema":{
+              "$ref":"#/definitions/OrderDTO"
+            }
+          }
+        ],
+        "responses":{
+          "204":{
+            "description":"No Content",
+            "headers":{
+            }
+          },
+          "400":{
+            "description":"Bad Request",
+            "headers":{
+            },
+            "schema":{
+              "$ref":"#/definitions/ErrorDTO"
+            }
+          }
+        }
+      }
+    },
+    "/bookings/{bookingId}/labels": {
+      "get": {
+        "consumes": [
+        ],
+        "produces": [
+          "application/pdf"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "bookingId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "isLabeledPrinter",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "printFormat",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "lang",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+            },
+            "schema": {
+              "type": "file"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "headers": {
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorDTO"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "AddressDTO": {
+      "properties": {
+        "address1": {
+          "type": "string"
+        },
+        "address2": {
+          "type": "string"
+        },
+        "address3": {
+          "type": "string"
+        },
+        "alias": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "countryCode": {
+          "type": "string"
+        },
+        "instructions": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "zipCode": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "address1",
+        "countryCode",
+        "city",
+        "name"
+      ]
+    },
+    "ContactPersonDTO": {
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "empty": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "telephone": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "DateTimeDTO": {
+      "description": "Date and time specification for the booking",
+      "properties": {
+        "deliveryDate": {
+          "type": "integer",
+          "example": "1527717600000"
+        },
+        "deliveryTimeEnd": {
+          "type": "integer"
+        },
+        "deliveryTimeStart": {
+          "type": "integer"
+        },
+        "pickupDate": {
+          "type": "integer",
+          "example": "1527717600000"
+        },
+        "pickupTimeEnd": {
+          "type": "integer"
+        },
+        "pickupTimeStart": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "pickupDate"
+      ]
+    },
+    "PartyDTO": {
+      "properties": {
+        "address": {
+          "$ref": "#/definitions/AddressDTO"
+        },
+        "contact": {
+          "$ref": "#/definitions/ContactPersonDTO"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "BOOKING_PARTY",
+            "CARRIER",
+            "DELIVERY",
+            "FREIGHT_PAYER",
+            "NOTIFY",
+            "PICKUP",
+            "RECEIVER",
+            "SENDER"
+          ]
+        }
+      },
+      "required": [
+        "address",
+        "type"
+      ]
+    },
+    "ProductDTO": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": [
+            "ROAD",
+            "AIR",
+            "SEA",
+            "RAIL"
+          ]
+        },
+        "params": {
+          "type": "object"
+        }
+      }
+    },
+    "ErrorDTO": {
+      "properties": {
+        "code": {
+          "type": "string",
+          "example": "ERR12345"
+        },
+        "development": {
+          "$ref": "#/definitions/ErrorDTO$DevelopmentDTO"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ErrorDTO$FieldDTO"
+          }
+        },
+        "message": {
+          "type": "string",
+          "example": "This message is passed to the application user"
+        }
+      },
+      "required": [
+        "message"
+      ]
+    },
+    "ErrorDTO$DevelopmentDTO": {
+      "description": "Development details for problem",
+      "properties": {
+        "exception": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string",
+          "example": "verbose, plain language description of the problem for the app developer with hints on how to fix it"
+        }
+      }
+    },
+    "ErrorDTO$FieldDTO": {
+      "description": "Specify fields of error",
+      "properties": {
+        "code": {
+          "type": "string",
+          "example": "ERR12345"
+        },
+        "message": {
+          "type": "string",
+          "example": "validation error"
+        },
+        "name": {
+          "type": "string",
+          "example": "field_name"
+        }
+      }
+    },
+    "ResultDTO": {
+      "description": "Returned for successful booking",
+      "properties": {
+        "bookingId": {
+          "type": "string",
+          "example": "40257084630004090521"
+        }
+      },
+      "example": {
+        "bookingId": "40257084630004090521"
+      },
+      "required": [
+        "bookingId"
+      ]
+    },
+    "OrderDTO": {
+      "properties": {
+        "autobook": {
+          "type": "boolean",
+          "description": "ignored for /bookings POST"
+        },
+        "dateTime": {
+          "$ref": "#/definitions/DateTimeDTO"
+        },
+        "orderReferences": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OrderReferenceDTO"
+          }
+        },
+        "packages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PackageDTO"
+          }
+        },
+        "parties": {
+          "description": "BOOKING_PARTY, SENDER, RECEIVER required, FREIGHT_PAYER required for Road",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PartyDTO"
+          }
+        },
+        "payment": {
+          "description": "required for Road",
+          "$ref": "#/definitions/PaymentDTO"
+        },
+        "product": {
+          "$ref": "#/definitions/ProductDTO"
+        },
+        "services": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ServiceDTO"
+          }
+        },
+        "settings": {
+          "$ref": "#/definitions/SettingsDTO"
+        },
+        "templateName": {
+          "description": "use saved template for booking purposes",
+          "type": "string"
+        }
+      },
+      "required": [
+        "product",
+        "dateTime",
+        "parties",
+        "packages"
+      ],
+      "example": {
+        "product": {
+          "name": "Road"
+        },
+        "payment": {
+          "code": "EXW",
+          "location": "Warka"
+        },
+        "dateTime": {
+          "pickupDate": "2018-06-14"
+        },
+        "parties": [
+          {
+            "address": {
+              "name": "TESTBP",
+              "address1": "TESTSTREET 123",
+              "city": "Warka",
+              "countryCode": "NL",
+              "zipCode": "05-660"
+            },
+            "type": "BOOKING_PARTY"
+          },
+          {
+            "address": {
+              "name": "abc",
+              "alias": "adresAliasB",
+              "address1": "AddressLine1B",
+              "address2": "AddressLine2B",
+              "address3": "AddressLine3B",
+              "city": "CityB",
+              "countryCode": "DE",
+              "zipCode": "1204B"
+            },
+            "type": "FREIGHT_PAYER"
+          },
+          {
+            "address": {
+              "name": "TESTBP",
+              "address1": "TESTSTREET 123",
+              "city": "Warka",
+              "countryCode": "NL",
+              "zipCode": "05-660"
+            },
+            "type": "SENDER"
+          },
+          {
+            "address": {
+              "name": "abcd",
+              "alias": "adresAliasC",
+              "address1": "AddressLine1C",
+              "address2": "AddressLine2C",
+              "address3": "AddressLine3C",
+              "city": "CityC",
+              "countryCode": "DE",
+              "zipCode": "1204C"
+            },
+            "type": "RECEIVER"
+          }
+        ],
+        "packages": [
+          {
+            "quantity": 1,
+            "totalWeight": 241,
+            "packageType": "CAS",
+            "description": "Package ABC"
+          }
+        ]
+      }
+    },
+    "OrderReferenceDTO": {
+      "properties": {
+        "number": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "INVOICING_REFERENCE",
+            "ORDER_NUMBER",
+            "SHIPPER_REFERENCE",
+            "CONSIGNEE_REFERENCE",
+            "OTHER"
+          ]
+        }
+      },
+      "required": [
+        "number",
+        "type"
+      ]
+    },
+    "PackageDTO": {
+      "description": "Specify package line details",
+      "properties": {
+        "containerNo": {
+          "type": "integer",
+          "description": "zero-based container number"
+        },
+        "dangerous": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DangerousGoodsDTO"
+          }
+        },
+        "description": {
+          "type": "string"
+        },
+        "height": {
+          "type": "number"
+        },
+        "isDangerous": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "length": {
+          "type": "number"
+        },
+        "loadingMeters": {
+          "type": "number"
+        },
+        "netWeight": {
+          "type": "number"
+        },
+        "packageType": {
+          "type": "string",
+          "enum": [
+            "BAG",
+            "CAS",
+            "CLL",
+            "CRT",
+            "CTN",
+            "DRM",
+            "EUP",
+            "EUR",
+            "GIB",
+            "HPL",
+            "IBC",
+            "IPL",
+            "JCN",
+            "KPL",
+            "LOD",
+            "PLT",
+            "PXL",
+            "UPL"
+          ],
+          "description": "BAG=Bag  CAS=Case  CLL=Colli  CRT=Crate  CTN=Carton / box  DRM=Drum  EUP=Pallet - 120cm x 80cm  EUR=Euro pallet - 120cm x 80cm  GIB=Gitterbox - 120cm x 80cm  HPL=Half pallet - 80cm x 60cm  IBC=IBC - 120cm x 100cm  IPL=Pallet - 120cm x 100cm  JCN=Jerry can  KPL=Quarter pallet - 60cm x 40cm  LOD=Load  PLT=Pallet - unspecified  PXL=Pallet - 120cm x 120cm  UPL=Pallet - 120cm x 110cm"
+        },
+        "palletSpace": {
+          "type": "integer",
+          "description": "Used when stackable and pallet type, must be within <1 ; quantity) range"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "shippingMarks": {
+          "type": "string"
+        },
+        "stackable": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "temperatureMax": {
+          "type": "integer"
+        },
+        "temperatureMin": {
+          "type": "integer"
+        },
+        "totalVolume": {
+          "type": "number"
+        },
+        "totalWeight": {
+          "type": "number"
+        },
+        "width": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "quantity",
+        "totalWeight",
+        "packageType",
+        "description"
+      ]
+    },
+    "DangerousGoodsDTO": {
+      "description": "Specifies dangerous goods for road booking",
+      "properties": {
+        "className": {
+          "type": "string",
+          "example": "3"
+        },
+        "flashPoint": {
+          "type": "number"
+        },
+        "grossQuantity": {
+          "type": "number"
+        },
+        "grossQuantityUnit": {
+          "type": "string",
+          "enum": [
+            "KG",
+            "LTR"
+          ],
+          "default": "KG"
+        },
+        "limitedQuantity": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "marinePollutant": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Environmentally Hazardous (MP)"
+        },
+        "netQuantity": {
+          "type": "number"
+        },
+        "netQuantityUnit": {
+          "type": "string",
+          "enum": [
+            "KG",
+            "LTR"
+          ],
+          "default": "KG"
+        },
+        "packagesCount": {
+          "type": "integer"
+        },
+        "packingGroup": {
+          "type": "string",
+          "example": "II"
+        },
+        "packingKind": {
+          "type": "string",
+          "enum": [
+            "BAG",
+            "BOX",
+            "DRUM",
+            "IBC",
+            "JERRY"
+          ],
+          "description": "BAG=BAG - Bag  BOX=CTN - Box  DRUM=DRM - Drum  IBC=IBC - IBC  JERRY=JCN - Jerry can"
+        },
+        "properShippingName": {
+          "type": "string",
+          "example": "ALLYL CHLORIDE"
+        },
+        "subRisk": {
+          "type": "string",
+          "example": "6.1"
+        },
+        "technicalName": {
+          "type": "string"
+        },
+        "temperatureFrom": {
+          "type": "number"
+        },
+        "temperatureTo": {
+          "type": "number"
+        },
+        "tunnelCode": {
+          "type": "string",
+          "example": "D/E"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "ADR",
+            "IMDG",
+            "IATA"
+          ]
+        },
+        "unCode": {
+          "type": "integer",
+          "example": "1170"
+        }
+      },
+      "required": [
+        "type",
+        "unCode",
+        "className",
+        "packingGroup",
+        "packagesCount",
+        "packingKind",
+        "grossQuantity",
+        "grossQuantityUnit"
+      ]
+    },
+    "PaymentDTO": {
+      "description": "Payment (incoterm) details for road bookings",
+      "properties": {
+        "code": {
+          "type": "string",
+          "enum": [
+            "EXW",
+            "FCA",
+            "CPT",
+            "CIP",
+            "DAF",
+            "DES",
+            "DEQ",
+            "DDU",
+            "DAT",
+            "DAP",
+            "DDP",
+            "FAS",
+            "FOB",
+            "CFR",
+            "CIF"
+          ],
+          "description": "EXW=EX Works  FCA=Free Carrier  CPT=Carriage Paid To  CIP=Carriage and Insurance Paid to  DAF=Delivered at Frontier  DES=Ex Ship  DEQ=Ex Quay  DDU=Delivered Duty Unpaid  DAT=Delivered at Terminal  DAP=Delivered at Place  DDP=Delivered Duty Paid  FAS=Free Alongside Ship  FOB=Free On Board  CFR=Cost And Freight  CIF=Cost Insurance Freight"
+        },
+        "location": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "location"
+      ]
+    },
+    "ServiceDTO": {
+      "description": "Specifies used service, used mainly for mode of transport.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": [
+            "Road",
+            "Air",
+            "Sea",
+            "Rail"
+          ],
+          "description": "Specifies service that translates to transport type but is not limited to it, all known service types will be provided elsewhere."
+        },
+        "params": {
+          "description": "Key value map of service params",
+          "type": "object"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "SettingsDTO": {
+      "description": "Specifies user preferred settings, used for defining units of measure, might be extended in future",
+      "properties": {
+        "dimension": {
+          "type": "string",
+          "enum": [
+            "CM",
+            "IN"
+          ],
+          "default": "CM"
+        },
+        "loadingSpace": {
+          "type": "string",
+          "enum": [
+            "LM"
+          ],
+          "default": "LM"
+        },
+        "temperature": {
+          "type": "string",
+          "enum": [
+            "C",
+            "F"
+          ],
+          "default": "C"
+        },
+        "volume": {
+          "type": "string",
+          "enum": [
+            "FT3",
+            "M3"
+          ],
+          "default": "M3"
+        },
+        "weight": {
+          "type": "string",
+          "enum": [
+            "KG",
+            "LB"
+          ],
+          "default": "KG"
+        }
+      }
+    }
+  }
+}
