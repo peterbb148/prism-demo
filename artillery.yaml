@@ -1,0 +1,15 @@
+config:
+  target: "http://kubemaster01"
+  phases:
+    - duration: 60
+      arrivalRate: 10
+      rampTo: 50
+      name: "Warm up the application"
+    - duration: 600
+      arrivalRate: 50
+      name: "Sustained max load"
+scenarios:
+  - name: "Get shipment"
+    flow:
+      - get:
+          url: "/shipments/tmsId/123"
